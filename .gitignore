@@ -1,8 +1,7 @@
-# packaged directory
-/electron-screen-share*
 # conf
 conf.json
 *conf.json
+/static/*js
 
 .DS_Store
 .env
@@ -22,7 +21,7 @@ conf.json
 *.vcxproj.user
 *.xcodeproj
 /.idea/
-/dist/*.js*
+/dist/
 /external_binaries/
 /out/
 /vendor/.gclient

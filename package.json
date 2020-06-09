@@ -2,12 +2,25 @@
   "name": "electron-screen-share",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.js",
+  "main": "./static/main.js",
+  "build": {
+    "appId": "electron-screen-share",
+    "win": {
+      "target": {
+        "target": "nsis",
+        "arch": [
+          "x64",
+          "ia32"
+        ]
+      }
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "ts": "tsc",
     "watch": "tsc -w",
-    "start": "npm run build && electron ./dist/main.js"
+    "start": "npm run ts && electron ./static/main.js",
+    "dist": "electron-builder -w"
   },
   "author": "",
   "license": "ISC",
