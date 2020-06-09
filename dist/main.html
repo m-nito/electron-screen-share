@@ -6,6 +6,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css"
     />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
 
     <title>electron-screen-share</title>
     <link rel="stylesheet" href="./main.css" />
@@ -27,6 +31,16 @@
           <span class="card-title">共有する画面の選択</span>
         </div>
       </div>
+      <ul class="capture-modes">
+        <button class="waves-effect waves-light btn-small" id="mode-window-btn">
+          <i class="large material-icons">add_to_photos</i>
+          <span>Window</span>
+        </button>
+        <button class="waves-effect waves-light btn-small" id="mode-screen-btn">
+          <i class="medium material-icons">screen_share</i>
+          <span>Screen</span>
+        </button>
+      </ul>
       <ul class="capture-list"></ul>
     </div>
   </body>
