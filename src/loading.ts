@@ -65,7 +65,16 @@ const loadJson = () => {
     try {
       fs.writeFileSync(
         path,
-        JSON.stringify({ apiKey: "", databaseURL: "" }),
+        JSON.stringify({
+          apiKey: "",
+          authDomain: "",
+          databaseURL: "",
+          projectId: "",
+          storageBucket: "",
+          messagingSenderId: "",
+          appId: "",
+          measurementId: "",
+        }),
         enc
       );
     } catch (err) {
