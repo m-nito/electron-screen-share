@@ -2,15 +2,17 @@
   "name": "electron-screen-share",
   "version": "1.0.0",
   "description": "",
+  "author": "https://github.com/m-nito/electron-screen-share",
+  "homepage": "https://github.com/m-nito/electron-screen-share",
   "main": "./static/main.js",
   "build": {
     "appId": "electron-screen-share",
+    "copyright": "Copyright © year https://github.com/m-nito/electron-screen-share",
     "win": {
       "target": {
         "target": "nsis",
         "arch": [
-          "x64",
-          "ia32"
+          "x64"
         ]
       }
     }
@@ -20,9 +22,8 @@
     "ts": "tsc",
     "watch": "tsc -w",
     "start": "npm run ts && electron ./static/main.js",
-    "dist": "electron-builder -w"
+    "dist": "npm run ts && electron-builder -w"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "domify": "^1.4.0",
