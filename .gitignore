@@ -1,5 +1,5 @@
 # packaged directory
-/electron-streamer-win32-x64/
+/electron-screen-share*
 # conf
 conf.json
 *conf.json
@@ -22,7 +22,7 @@ conf.json
 *.vcxproj.user
 *.xcodeproj
 /.idea/
-/dist/
+/dist/*.js*
 /external_binaries/
 /out/
 /vendor/.gclient
@@ -43,7 +43,7 @@ conf.json
 /vendor/pyyaml
 node_modules/
 SHASUMS256.txt
-**/package-lock.json
+# **/package-lock.json
 compile_commands.json
 .envrc
 
