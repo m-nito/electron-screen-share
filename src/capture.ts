@@ -1,15 +1,25 @@
 import { desktopCapturer, ipcRenderer } from "electron";
+import {
+  EVT_CLOSING,
+  EVT_SHOW_SELECTOR,
+  EVT_SRC_SELECTED,
+} from "./eventMessages";
 
+/**
+ * Shows video devices.
+ * @param event
+ * @param options
+ */
 export const getSources = (event, options) => {
   desktopCapturer.getSources(options).then(async (sources) => {
-    let sourcesList = document.querySelector(".capture-list");
+    let parent = document.querySelector(".capture-list");
     for (let source of sources) {
       let thumb = source.thumbnail.toDataURL();
       if (!thumb) continue;
       let title = source.name.slice(0, 30);
 
       let li = document.createElement("li");
-      sourcesList.appendChild(li);
+      parent.appendChild(li);
       let a = document.createElement("a");
       let img = document.createElement("img");
       img.src = thumb;
@@ -21,7 +31,7 @@ export const getSources = (event, options) => {
       a.appendChild(span);
       a.onclick = (e) => {
         e.preventDefault();
-        ipcRenderer.send("sourceSelected", source);
+        ipcRenderer.send(EVT_SRC_SELECTED, source);
       };
     }
   });
@@ -30,8 +40,27 @@ export const getSources = (event, options) => {
   elem.style.resize = "both";
 };
 
-ipcRenderer.on("showSourceSelector", getSources);
-ipcRenderer.on("closing", () => {
+function clearChildren() {
+  let list = document.querySelector(".capture-list");
+  console.log(list.children.length);
+  for (let child of Array.from(list.childNodes)) {
+    list.removeChild(child);
+  }
+}
+
+ipcRenderer.on(EVT_SHOW_SELECTOR, getSources);
+ipcRenderer.on(EVT_CLOSING, () => {
   ipcRenderer.send("closed");
 });
-ipcRenderer.send("showSourceSelector", { types: ["screen", "window"] });
+
+ipcRenderer.send(EVT_SHOW_SELECTOR, { types: ["screen"] });
+window.onload = function () {
+  document.getElementById("mode-window-btn").addEventListener("click", () => {
+    clearChildren();
+    ipcRenderer.send(EVT_SHOW_SELECTOR, { types: ["window"] });
+  });
+  document.getElementById("mode-screen-btn").addEventListener("click", () => {
+    clearChildren();
+    ipcRenderer.send(EVT_SHOW_SELECTOR, { types: ["screen"] });
+  });
+};

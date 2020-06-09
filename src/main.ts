@@ -1,28 +1,28 @@
 import * as url from "url";
 import * as path from "path";
-import {
-  app,
-  BrowserWindow,
-  Menu,
-  MenuItem,
-  shell,
-  ipcMain,
-  desktopCapturer,
-  ipcRenderer,
-} from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import electronLocalshortcut = require("electron-localshortcut");
-let fs = require("fs");
+import {
+  EVT_CLOSING,
+  EVT_APP_CLOSE,
+  EVT_APP_READY,
+  EVT_SHOW_SELECTOR,
+  EVT_SRC_SELECTED,
+} from "./eventMessages";
 
 let mainWindow: Electron.BrowserWindow;
-const menu = new Menu();
 
 // SET ENV
 process.env.NODE_ENV = "development";
 app.allowRendererProcessReuse = true;
 
+/**
+ * Event on app-close.
+ * @param event
+ */
 const onClose = (event) => {
   event.preventDefault();
-  mainWindow.webContents.send("closing");
+  mainWindow.webContents.send(EVT_CLOSING);
 };
 
 const onReady = () => {
@@ -41,12 +41,15 @@ const onReady = () => {
   );
 
   // Quit app when closed
-  mainWindow.on("close", onClose);
+  mainWindow.on(EVT_APP_CLOSE, onClose);
 
-  ipcMain.on("showSourceSelector", (event, options) => {
-    mainWindow.webContents.send("showSourceSelector", options);
+  // On capture.ts is ready (or on refresh event of it), relay message to capture.ts.
+  ipcMain.on(EVT_SHOW_SELECTOR, (event, options) => {
+    mainWindow.webContents.send(EVT_SHOW_SELECTOR, options);
   });
-  ipcMain.on("sourceSelected", (event, sourceId) => {
+
+  // When source is selected, toggle to loading.html
+  ipcMain.on(EVT_SRC_SELECTED, (event, sourceId) => {
     mainWindow
       .loadURL(
         url.format({
@@ -56,10 +59,10 @@ const onReady = () => {
         })
       )
       .then(() => {
-        mainWindow.webContents.send("sourceSelected", sourceId);
+        mainWindow.webContents.send(EVT_SRC_SELECTED, sourceId);
       });
   });
-  ipcMain.on("close", onClose);
+  ipcMain.on(EVT_APP_CLOSE, onClose);
   ipcMain.on("closed", () => {
     mainWindow.destroy();
     app.quit();
@@ -72,4 +75,4 @@ const onReady = () => {
   });
 };
 // Listen for app to be ready
-app.on("ready", onReady);
+app.on(EVT_APP_READY, onReady);

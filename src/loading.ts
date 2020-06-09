@@ -1,6 +1,7 @@
 import { ipcRenderer } from "electron";
 import WRTCSession from "./wrtcsession";
 import fs = require("fs");
+import { EVT_CLOSING, EVT_APP_CLOSE, EVT_SRC_SELECTED } from "./eventMessages";
 
 let MyVideo: MediaStreamTrack;
 let MySession: WRTCSession;
@@ -44,13 +45,13 @@ const onMessage = (msg: string) => {
     case "endConnection":
       log("通信相手との接続が終了しました。アプリケーションを終了します...");
       setTimeout(() => {
-        ipcRenderer.send("close");
+        ipcRenderer.send(EVT_APP_CLOSE);
       }, 5000);
       break;
     case "jsonError":
       log("conf.jsonの読み込みに失敗しました。アプリケーションを終了します...");
       setTimeout(() => {
-        ipcRenderer.send("close");
+        ipcRenderer.send(EVT_APP_CLOSE);
       }, 5000);
       break;
     default:
@@ -88,7 +89,7 @@ const loadJson = () => {
   }
   return api;
 };
-ipcRenderer.on("sourceSelected", (event, source) => {
+ipcRenderer.on(EVT_SRC_SELECTED, (event, source) => {
   let sourceId = source.id;
   toggleLoading(true);
   if (!sourceId) return;
@@ -133,5 +134,5 @@ ipcRenderer.on("sourceSelected", (event, source) => {
       console.log("getUserMedia() failed.");
     }
   );
-  ipcRenderer.on("closing", onClose);
+  ipcRenderer.on(EVT_CLOSING, onClose);
 });
