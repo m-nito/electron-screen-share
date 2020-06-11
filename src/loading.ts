@@ -3,53 +3,82 @@ import WRTCSession from "./wrtcsession";
 import fs = require("fs");
 import { EVT_CLOSING, EVT_APP_CLOSE, EVT_SRC_SELECTED } from "./eventMessages";
 
+/**
+ * Current user video.
+ */
 let MyVideo: MediaStreamTrack;
+
+/**
+ * Current WebRTC Session.
+ */
 let MySession: WRTCSession;
 
-const toggleLoading = (loading) => {
-  let elem = <HTMLElement>document.querySelector(".loader");
-  elem.style.display = loading ? "block" : "none";
-};
+/**
+ * Event on app-close.
+ */
 const onClose = () => {
   if (MySession) {
     MySession.onClose();
   }
   ipcRenderer.send("closed");
 };
-const log = (text) => {
+
+/**
+ * Toggle loading state.
+ * @param loading True if loading.
+ */
+const toggleLoading = (loading: boolean) => {
+  let elem = <HTMLElement>document.querySelector(".loader");
+  elem.style.display = loading ? "block" : "none";
+};
+
+/**
+ * Show log message.
+ * @param text Message to show.
+ */
+const showLog = (text: string) => {
   let parent = document.querySelector(".video-overlay");
   parent.innerHTML = "";
   let message = document.createTextNode(text);
   parent.appendChild(message);
 };
+
+/**
+ * Handle message.
+ * @param msg message key.
+ */
 const onMessage = (msg: string) => {
   switch (msg) {
     case "start":
-      log("通信の準備を行っています...");
+      showLog("通信の準備を行っています...");
       break;
     case "waitingForPeer":
-      log("通信相手を探しています...");
+      showLog("通信相手を探しています...");
       break;
     case "sendOffer":
-      log("通信相手との接続を確立しています...");
+      showLog("通信相手との接続を確立しています...");
       break;
     case "receiveOffer":
-      log("通信相手との接続を確立しています...");
+      showLog("通信相手との接続を確立しています...");
       break;
     case "sendAnswer":
-      log("");
+      showLog("");
       break;
     case "receiveAnswer":
-      log("");
+      showLog("");
       break;
     case "endConnection":
-      log("通信相手との接続が終了しました。アプリケーションを終了します...");
+      showLog(
+        "通信相手との接続が終了しました。アプリケーションを終了します..."
+      );
       setTimeout(() => {
         ipcRenderer.send(EVT_APP_CLOSE);
       }, 5000);
       break;
     case "jsonError":
-      log("conf.jsonの読み込みに失敗しました。アプリケーションを終了します...");
+      showLog(
+        "conf.jsonの読み込みに失敗しました。アプリケーションを終了します..."
+      );
       setTimeout(() => {
         ipcRenderer.send(EVT_APP_CLOSE);
       }, 5000);
@@ -58,6 +87,10 @@ const onMessage = (msg: string) => {
       break;
   }
 };
+
+/**
+ *Loads json.
+ */
 const loadJson = () => {
   let path = "./conf.json";
   let enc = "utf8";
@@ -98,6 +131,35 @@ const loadJson = () => {
   }
   return api;
 };
+
+/**
+ * Starts session.
+ * @param stream Stream of user video.
+ */
+const initSession = (stream: MediaStreamTrack) => {
+  MyVideo = stream;
+  stream.onended = () => {
+    console.log("Media stream ended.");
+  };
+  let api = loadJson();
+  if (!api) return;
+  MySession = new WRTCSession(MyVideo, api);
+  MySession.OnLog = onMessage;
+  onMessage("waitingForPeer");
+  MySession.OnReadyCallback = (stream) => {
+    let vid = document.createElement("video");
+    let cont = document.querySelector(".outer-container");
+    vid.className = "video";
+    cont.appendChild(vid);
+    vid.srcObject = stream;
+    vid.autoplay = true;
+    toggleLoading(false);
+  };
+};
+
+/**
+ * Register an event on source selection.
+ */
 ipcRenderer.on(EVT_SRC_SELECTED, (event, source) => {
   let sourceId = source.id;
   toggleLoading(true);
@@ -117,27 +179,8 @@ ipcRenderer.on(EVT_SRC_SELECTED, (event, source) => {
         },
       },
     },
-    //successCallback
-    (myStream) => {
-      MyVideo = myStream;
-      myStream.onended = () => {
-        console.log("Media stream ended.");
-      };
-      let api = loadJson();
-      if (!api) return;
-      MySession = new WRTCSession(MyVideo, api);
-      MySession.OnLog = onMessage;
-      onMessage("waitingForPeer");
-      MySession.OnReadyCallback = (stream) => {
-        let vid = document.createElement("video");
-        let cont = document.querySelector(".outer-container");
-        vid.className = "video";
-        cont.appendChild(vid);
-        vid.srcObject = stream;
-        vid.autoplay = true;
-        toggleLoading(false);
-      };
-    },
+    // successCallback
+    initSession,
     // errorCallback
     () => {
       console.log("getUserMedia() failed.");

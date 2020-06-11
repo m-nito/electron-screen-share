@@ -8,11 +8,20 @@ export default class FBDatabase {
   ClientRef: firebase.database.Reference;
   ClientId: string;
   BroadcastId: string;
+
+  /**
+   * .ctor
+   * @param api Api data required for firebase-database.
+   */
   constructor(api) {
     firebase.initializeApp(api);
     this.Database = firebase.database();
     this.Setup();
   }
+
+  /**
+   * Sets initial state.
+   */
   Setup() {
     // client id
     this.ClientId = this.query("/_join_")
@@ -45,12 +54,28 @@ export default class FBDatabase {
   query(arg): firebase.database.Reference {
     return this.Database.ref(DatabaseRoot + ChannelId + arg);
   }
+
+  /**
+   * push message to client table.
+   * @param id
+   * @param message
+   */
   pushToClient(id, message) {
     this.query("/_direct_/" + id).push(message);
   }
+
+  /**
+   * Clears data from client table.
+   * @param id
+   * @param dataKey
+   */
   clearFromClient(id, dataKey) {
     this.query(`/_direct_/${id}/${dataKey}`).remove();
   }
+
+  /**
+   * Clear current broadcast record.
+   */
   clearBroadcast() {
     this.query("/_broadcast_/" + this.BroadcastId).remove();
   }

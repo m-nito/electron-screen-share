@@ -42,7 +42,6 @@ export const getSources = (event, options) => {
 
 function clearChildren() {
   let list = document.querySelector(".capture-list");
-  console.log(list.children.length);
   for (let child of Array.from(list.childNodes)) {
     list.removeChild(child);
   }

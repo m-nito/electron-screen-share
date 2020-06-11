@@ -10,6 +10,9 @@ import {
   EVT_SRC_SELECTED,
 } from "./eventMessages";
 
+/**
+ * Main window of this app.
+ */
 let mainWindow: Electron.BrowserWindow;
 
 // SET ENV
@@ -25,13 +28,15 @@ const onClose = (event) => {
   mainWindow.webContents.send(EVT_CLOSING);
 };
 
+/**
+ * Event on app-ready.
+ * Creates mainwindow and load main.html.
+ */
 const onReady = () => {
   mainWindow = new BrowserWindow({
     autoHideMenuBar: true,
     webPreferences: { nodeIntegration: true },
   });
-
-  // load html
   mainWindow.loadURL(
     url.format({
       pathname: path.join(__dirname, "main.html"),
@@ -62,13 +67,15 @@ const onReady = () => {
         mainWindow.webContents.send(EVT_SRC_SELECTED, sourceId);
       });
   });
+
+  // register onClose method.
   ipcMain.on(EVT_APP_CLOSE, onClose);
   ipcMain.on("closed", () => {
     mainWindow.destroy();
     app.quit();
   });
 
-  // shortcut keys
+  // Register shortcut keys
   electronLocalshortcut.register(mainWindow, "F12", () => {
     if (process.env.NODE_ENV == "development")
       mainWindow.webContents.toggleDevTools();
