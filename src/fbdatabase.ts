@@ -2,6 +2,10 @@ import * as firebase from "firebase";
 
 const DatabaseRoot = "origin/";
 const ChannelId = "channel";
+
+/**
+ * Class for Firebase-Database.
+ */
 export default class FBDatabase {
   Database: firebase.database.Database;
   BroadcastRef: firebase.database.Reference;

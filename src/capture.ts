@@ -10,7 +10,7 @@ import {
  * @param event
  * @param options
  */
-export const getSources = (event, options) => {
+export const showSelectors = (event, options) => {
   desktopCapturer.getSources(options).then(async (sources) => {
     let parent = document.querySelector(".capture-list");
     for (let source of sources) {
@@ -40,26 +40,35 @@ export const getSources = (event, options) => {
   elem.style.resize = "both";
 };
 
-function clearChildren() {
+/**
+ * Clears list elemets.
+ */
+function clearElements() {
   let list = document.querySelector(".capture-list");
   for (let child of Array.from(list.childNodes)) {
     list.removeChild(child);
   }
 }
 
-ipcRenderer.on(EVT_SHOW_SELECTOR, getSources);
+// Shows selectors on event.
+ipcRenderer.on(EVT_SHOW_SELECTOR, showSelectors);
+
+// Relay message on closing event.
 ipcRenderer.on(EVT_CLOSING, () => {
   ipcRenderer.send("closed");
 });
 
+// Shows the screen selector as initial selector.
 ipcRenderer.send(EVT_SHOW_SELECTOR, { types: ["screen"] });
+
+// Register button functions.
 window.onload = function () {
   document.getElementById("mode-window-btn").addEventListener("click", () => {
-    clearChildren();
+    clearElements();
     ipcRenderer.send(EVT_SHOW_SELECTOR, { types: ["window"] });
   });
   document.getElementById("mode-screen-btn").addEventListener("click", () => {
-    clearChildren();
+    clearElements();
     ipcRenderer.send(EVT_SHOW_SELECTOR, { types: ["screen"] });
   });
 };
