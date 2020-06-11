@@ -1,6 +1,6 @@
 import { ipcRenderer } from "electron";
 import WRTCSession from "./wrtcsession";
-import fs = require("fs");
+import loadJson from "./configHandler";
 import { EVT_CLOSING, EVT_APP_CLOSE, EVT_SRC_SELECTED } from "./eventMessages";
 
 /**
@@ -89,50 +89,6 @@ const onMessage = (msg: string) => {
 };
 
 /**
- *Loads json.
- */
-const loadJson = () => {
-  let path = "./conf.json";
-  let enc = "utf8";
-  if (!fs.existsSync(path)) {
-    try {
-      fs.writeFileSync(
-        path,
-        JSON.stringify({
-          apiKey: "",
-          authDomain: "",
-          databaseURL: "",
-          projectId: "",
-          storageBucket: "",
-          messagingSenderId: "",
-          appId: "",
-          measurementId: "",
-        }),
-        enc
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  let getApi = () => {
-    let conf = fs.readFileSync(path, enc);
-    try {
-      let parsed = JSON.parse(conf);
-      return parsed;
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  };
-  let api = getApi();
-  if (!api || !api.apiKey || !api.databaseURL) {
-    onMessage("jsonError");
-    return null;
-  }
-  return api;
-};
-
-/**
  * Starts session.
  * @param stream Stream of user video.
  */
@@ -142,7 +98,10 @@ const initSession = (stream: MediaStreamTrack) => {
     console.log("Media stream ended.");
   };
   let api = loadJson();
-  if (!api) return;
+  if (!api || !api.apiKey || !api.databaseURL) {
+    onMessage("jsonError");
+    return;
+  }
   MySession = new WRTCSession(MyVideo, api);
   MySession.OnLog = onMessage;
   onMessage("waitingForPeer");
