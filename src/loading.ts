@@ -1,4 +1,4 @@
-import { ipcRenderer } from "electron";
+import { ipcRenderer, IpcRendererEvent } from "electron";
 import WRTCSession from "./wrtcsession";
 import loadJson from "./configHandler";
 import { EVT_CLOSING, EVT_APP_CLOSE, EVT_SRC_SELECTED } from "./eventMessages";
@@ -90,11 +90,11 @@ const onMessage = (msg: string) => {
 
 /**
  * Starts session.
- * @param stream Stream of user video.
+ * @param myStream Stream of user video.
  */
-const initSession = (stream: MediaStreamTrack) => {
-  MyVideo = stream;
-  stream.onended = () => {
+const initSession = (myStream: MediaStreamTrack) => {
+  MyVideo = myStream;
+  myStream.onended = () => {
     console.log("Media stream ended.");
   };
   let api = loadJson();
@@ -119,7 +119,7 @@ const initSession = (stream: MediaStreamTrack) => {
 /**
  * Register an event on source selection.
  */
-ipcRenderer.on(EVT_SRC_SELECTED, (event, source) => {
+ipcRenderer.on(EVT_SRC_SELECTED, (event: IpcRendererEvent, source) => {
   let sourceId = source.id;
   toggleLoading(true);
   if (!sourceId) return;

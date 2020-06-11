@@ -1,4 +1,4 @@
-import { desktopCapturer, ipcRenderer } from "electron";
+import { desktopCapturer, ipcRenderer, IpcRendererEvent } from "electron";
 import {
   EVT_CLOSING,
   EVT_SHOW_SELECTOR,
@@ -10,7 +10,7 @@ import {
  * @param event
  * @param options
  */
-export const showSelectors = (event, options) => {
+export const showSelectors = (event: IpcRendererEvent, options) => {
   desktopCapturer.getSources(options).then(async (sources) => {
     let parent = document.querySelector(".capture-list");
     for (let source of sources) {
