@@ -5,7 +5,7 @@
 
 # What it does
 
-- 起動後、画面の選択を行います。
+- 起動後、画面の選択を行います。スクリーン共有とウインドウ共有の二種類から選択できます。
 
 ![Image](github-images/1.png)
 
@@ -34,8 +34,3 @@
   - https://qiita.com/lighthouse/items/34bb8ccb6149bbfae427
 - WebRTC のシグナリングに Firebase Realtime Database を使って P2P 通信をしてみた
   - https://qiita.com/Yamazin/items/9c4a87e9685fe34ebf8c
-
-# How to:
-
-- Debug run: npm run start
-- Build for Windows: electron-packager . --platform=win32
