@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/electron-localshortcut": "^3.1.0",
-    "electron": "^8.3.1",
+    "electron": "^8.5.2",
     "electron-builder": "^22.7.0",
     "electron-packager": "^14.2.1"
   }
